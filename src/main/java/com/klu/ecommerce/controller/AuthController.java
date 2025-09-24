@@ -20,7 +20,7 @@ public class AuthController {
         String username = request.get("username");
         String email = request.get("email");
         String password = request.get("password");
-        return ResponseEntity.ok(userService.registerUser(username, email, password));
+        return userService.registerUser(username, email, password);
     }
 
     @PostMapping("/login")
@@ -30,3 +30,4 @@ public class AuthController {
         return ResponseEntity.ok(userService.loginUser(username, password));
     }
 }
+
