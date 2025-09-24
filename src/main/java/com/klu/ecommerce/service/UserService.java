@@ -3,6 +3,8 @@ package com.klu.ecommerce.service;
 import com.klu.ecommerce.entity.User;
 import com.klu.ecommerce.repository.UserRepository;
 import com.klu.ecommerce.security.JwtUtil;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -19,16 +21,19 @@ public class UserService {
         this.jwtUtil = jwtUtil;
     }
 
-    public String registerUser(String username, String email, String password) {
-        if (userRepository.findByUsername(username).isPresent() || userRepository.findByEmail(email).isPresent()) {
-            throw new RuntimeException("User already exists!");
+    public ResponseEntity<String> registerUser(String username, String email, String password) {
+        if (userRepository.findByUsername(username).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already taken!");
+        }
+        if (userRepository.findByEmail(email).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already registered!");
         }
         User user = new User();
         user.setUsername(username);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         userRepository.save(user);
-        return "User registered successfully!";
+        return ResponseEntity.ok("User registered successfully!");
     }
 
     public String loginUser(String username, String password) {
